@@ -12,9 +12,11 @@ function MapComponent(){
   return (
     <MapContainer style={{ height: '100vh' }} center={[36, -79]} zoom={9} scrollWheelZoom={false}>
     <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    />
+   url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+   maxZoom= {20}
+   subdomains={['mt1','mt2','mt3']}
+/>
+
 
     {bigLocations.map((elem, index) =>  {return <Marker position={[elem.position.lat, elem.position.lng]}> <Popup> {elem.name} </Popup></Marker>})}
     {smallLocations.map((elem, index) =>  {return <Marker position={[elem.lat, elem.lng]}> <Popup> {elem.name} </Popup></Marker>})}
