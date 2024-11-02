@@ -1,3 +1,8 @@
+""" This file runs an Extreme Gradient Boosting regression model to predict AQI values given a certain number of parameters.
+The first half of the file trains an XGBoost model and then dumps it into a pickle file where it can be opened later
+for future use and to make predictions. """
+
+
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
@@ -27,7 +32,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=7)
 # Putting the data into a regressor model since we're trying to predict continuous and non-categorical values
 # n_estimators is essentially the number of trees in the training
 reg = xgb.XGBRegressor(n_estimators=500, objective='reg:squarederror')
-# verbose just gives us constant updates on the training process
+# verbose is True to give us constant updates on the training process
 reg.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_test, y_test)], verbose=True)
 
 importance = reg.feature_importances_
@@ -59,11 +64,13 @@ X_blind[boolean_cols_blind] = X_blind[boolean_cols_blind].astype(int)
 """ Making predictions on the blind test dataset"""
 
 y_blind_pred = reg.predict(X_blind)
+y_blind_pred = np.ceil(y_blind_pred)
 
 """ Calculating the percentage accuracy within a ±3 tolerance margin """
 tolerance = 30
 within_tolerance = (abs(y_blind_actual - y_blind_pred) <= tolerance).sum()
 accuracy_percentage = (within_tolerance / len(y_blind_actual)) * 100
+
 print(f"Percentage of predictions within ±{tolerance} tolerance: {accuracy_percentage:.2f}%")
 
 
