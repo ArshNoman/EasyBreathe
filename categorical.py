@@ -15,7 +15,7 @@ import pickle
 """ Loading and preparing the training dataset """
 
 # removing the Date and the AQI columns because we don't want those interfering with the model's learning
-df = pd.read_csv('Bishkek.csv').drop(['AQI', 'Date'], axis=1)
+df = pd.read_csv('NCdata.csv').drop(['AQI', 'Date'], axis=1)
 # setting the x value to everything but the concern column since that's what we're trying to predict
 x = df.drop('concern', axis=1).copy()
 # setting the y value to the concern level column
