@@ -1,5 +1,5 @@
 """ This file essentially does the same thing as main.py except it predicts the Air Quality concern levels
-based on the U.S. Air Quality Index (https://www.airnow.gov/aqi/aqi-basics/). This makes for better and more relevant
+based on the U.S. Air Quality Index (https://www.airnow.gov/aqi/aqi-basics/). This makes for more relevant
 predictions compared to main.py's model since it's more of a classifier prediction model for only 5 values and
 gives more information on how the average citizen must react to a certain level of AQI."""
 
