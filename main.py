@@ -26,9 +26,14 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=7)
 
 # Putting the data into a regressor model since we're trying to predict continuous and non-categorical values
 # n_estimators is essentially the number of trees in the training
-reg = xgb.XGBRegressor(n_estimators=1000, objective='reg:squarederror')
+reg = xgb.XGBRegressor(n_estimators=500, objective='reg:squarederror')
 # verbose just gives us constant updates on the training process
 reg.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_test, y_test)], verbose=True)
+
+importance = reg.feature_importances_
+feature_importance_df = pd.DataFrame({'Feature': X.columns, 'Importance': importance})
+
+feature_importance_df = feature_importance_df.sort_values('Importance', ascending=True)
 
 """ Saving the model and opening it to test the blind dataset """
 
@@ -72,4 +77,13 @@ plt.xlabel('Data Point Index')
 plt.ylabel('AQI Value')
 plt.title('Actual vs. Predicted AQI Values')
 plt.legend()
+plt.show()
+
+""" Feature importance plotting, once more using Matplotlib """
+
+plt.figure(figsize=(10, 6))
+plt.barh(feature_importance_df['Feature'], feature_importance_df['Importance'])
+plt.xlabel('Importance')
+plt.ylabel('Feature')
+plt.title('Feature Importance')
 plt.show()
