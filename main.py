@@ -6,75 +6,70 @@ import pandas as pd
 import numpy as np
 import pickle
 
-# THIS IS A TEST TO SEE IF GIT COMMITS WORK
+""" Loading and preparing the training dataset """
 
-df = pd.read_csv('Bishkek.csv').drop(['AQI', 'Date'], axis=1)
+# removing the Date and the concern columns because we don't want those interfering with the model's learning
+train_df = pd.read_csv('Bishkek.csv').drop(['Date', 'concern'], axis=1)
+# setting the x value to everything but the AQI column since that's what we're trying to predict
+X = train_df.drop('AQI', axis=1).copy()
+# setting the y value to the AQI column
+y = train_df['AQI'].copy()
 
-x = df.drop('concern', axis=1).copy()
-y = df['concern'].copy()
+# Converting boolean columns to integers because XGBoost (and most ML models really) can't handle boolean
+# values and so we're essentially converting all the "True" to 1 and all the "False" to 0
+boolean_cols = X.select_dtypes(include=['bool']).columns.tolist()
+X[boolean_cols] = X[boolean_cols].astype(int)
 
-boolean_cols = x.select_dtypes(include=['bool']).columns.tolist()
-# Convert boolean columns to numeric
-x[boolean_cols] = x[boolean_cols].astype(int)
+""" Splitting the data and training the model """
 
-X_train, X_test, y_train, y_test = train_test_split(x, y, random_state=7, stratify=y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=7)
 
-reg = xgb.XGBRegressor(n_estimators=10)
+# Putting the data into a regressor model since we're trying to predict continuous and non-categorical values
+# n_estimators is essentially the number of trees in the training
+reg = xgb.XGBRegressor(n_estimators=1000, objective='reg:squarederror')
+# verbose just gives us constant updates on the training process
 reg.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_test, y_test)], verbose=True)
 
-importance = reg.feature_importances_
-feature_importance_df = pd.DataFrame({'Feature': x.columns, 'Importance': importance})
+""" Saving the model and opening it to test the blind dataset """
 
-feature_importance_df = feature_importance_df.sort_values('Importance', ascending=True)
+with open('xgboost.pkl', 'wb') as model_file:
+    # Saving the model file with pickle for potential future usage
+    pickle.dump(reg, model_file)
 
-filename = 'xgboost.pkl'
-pickle.dump(reg, open(filename, 'wb'))
+with open('xgboost.pkl', 'rb') as model_file:
+    # Opening the model file with pickle
+    reg = pickle.load(model_file)
 
-pred_df = pd.read_csv('blind.csv').drop(['AQI', 'Date'], axis=1)
+""" Running it with the blind dataset to test performance """
 
-x_pred = pred_df.drop('concern', axis=1).copy()
-y_true = pred_df['concern'].copy()
+# Literally repeating the same process as the previous code, just this time with a different dataset and no training
+blind_test_df = pd.read_csv('blind.csv').drop(['Date', 'concern'], axis=1)
+X_blind = blind_test_df.drop('AQI', axis=1)
+y_blind_actual = blind_test_df['AQI']
 
-boolean_cols = x_pred.select_dtypes(include=['bool']).columns.tolist()
-# Convert boolean columns to numeric
-x_pred[boolean_cols] = x_pred[boolean_cols].astype(int)
+# Convert boolean columns to integers once more but this time for the blind dataset
+boolean_cols_blind = X_blind.select_dtypes(include=['bool']).columns.tolist()
+X_blind[boolean_cols_blind] = X_blind[boolean_cols_blind].astype(int)
+
+""" Making predictions on the blind test dataset"""
+
+y_blind_pred = reg.predict(X_blind)
+
+""" Calculating the percentage accuracy within a ±3 tolerance margin """
+tolerance = 30
+within_tolerance = (abs(y_blind_actual - y_blind_pred) <= tolerance).sum()
+accuracy_percentage = (within_tolerance / len(y_blind_actual)) * 100
+print(f"Percentage of predictions within ±{tolerance} tolerance: {accuracy_percentage:.2f}%")
 
 
-y_pred = reg.predict(x_pred)
-y_pred = np.clip(y_pred, 0, 5)
-y_pred = np.ceil(y_pred)
-mse = mean_squared_error(y_true, y_pred)
-print('\n\nMean Squared Error (MSE):', mse)
+""" Plotting the actual vs predicted AQI values to visualize our data and its accuracy """
 
-tolerance = 0.5
-correct_predictions = np.abs(y_pred - y_true) <= tolerance
-accuracy_percentage = (np.sum(correct_predictions) / len(y_true)) * 100
-print('\n\nAccuracy Percentage:', str(accuracy_percentage) + '%')
-
-epsilon = 1e-10
-percentage_error = (np.abs(y_pred - y_true) / (y_true + epsilon)) * 100
-print('\n\nPercentage Errors for each data row:\n', str(percentage_error) + '%')
-
-median_error = np.median(percentage_error)
-mean_error = np.mean(percentage_error)
-
-print("\n\nMedian Percentage Error:", median_error)
-# print("Mean Percentage Error:", mean_error)
-
+# Using basic matplot lib for this process
 plt.figure(figsize=(10, 6))
-plt.barh(feature_importance_df['Feature'], feature_importance_df['Importance'])
-plt.xlabel('Importance')
-plt.ylabel('Feature')
-plt.title('Feature Importance')
-plt.show()
-
-x = np.arange(len(y_true))
-
-# Plot the true values and the predicted values
-plt.plot(x, y_true, label='True Values')
-plt.plot(x, y_pred, label='Predicted Values')
-plt.xlabel('Samples')
-plt.ylabel('Values')
-plt.title('True vs Predicted Values')
+plt.plot(y_blind_actual.values, label='Actual AQI', marker='o', linestyle='-', markersize=4)
+plt.plot(y_blind_pred, label='Predicted AQI', marker='x', linestyle='--', markersize=4)
+plt.xlabel('Data Point Index')
+plt.ylabel('AQI Value')
+plt.title('Actual vs. Predicted AQI Values')
 plt.legend()
 plt.show()
