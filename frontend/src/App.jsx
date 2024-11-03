@@ -11,6 +11,20 @@ const App = () => {
 
   const [date, setDate] = useState("0-0-0");
   const [time, setTime] = useState("");
+  const [predictions, setPredictions] = useState({
+
+  })
+
+  function update(isDate, value){
+    if(isDate == 1){
+      setDate(value);
+    }else if (isDate == 2){
+      setTime(value);
+    }
+
+    // send in get request here
+
+  }
 
   function parseDateAndTime(d){
     d = "" + d;
@@ -22,25 +36,26 @@ const App = () => {
       m = "11"
     }
     setDate(y + "-" + m + "-" + day);
-    console.log(d.substring(16, 18) +":00");
     setTime(d.substring(16, 18) +":00");
+
+    update(3, "");
   }
 
   return (
     <div className='container'>
         <div className='sidebar'>
           <div className='headers'>
-            <h1>EASYBREATHE</h1>
+            <h1>EASY BREATHE</h1>
             <h3>Air Quality Predictions</h3>
           </div>
           <div className='form'>
             <div className='form-group'>
               <label>Date: </label>
-              <input type="date" id="selected_date" value = {date} name="date" onChange={(e) => setDate(e.target.value)}/>
+              <input type="date" id="selected_date" value = {date} name="date" onChange={(e) => update(1, (e.target.value))}/>
             </div>
             <div className='form-group'>
               <label>Time: </label>
-              <input type="time" id="selected_time" value = {time} name="date" onChange={(e) => setTime(e.target.value)}/>
+              <input type="time" id="selected_time" value = {time} name="date" onChange={(e) => update(0, (e.target.value))}/>
             </div>
             <div className='form-group'>
               <button onClick={() => {parseDateAndTime(new Date)}}>Now</button>
@@ -49,7 +64,9 @@ const App = () => {
           <PhoneForm/>
         </div>
         <div className='map-container'>
-          <MapComponent/>
+          <MapComponent
+            predictions = {predictions}
+          />
         </div>
       </div>
 
