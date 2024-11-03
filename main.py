@@ -14,7 +14,7 @@ import pickle
 """ Loading and preparing the training dataset """
 
 # removing the Date and the concern columns because we don't want those interfering with the model's learning
-train_df = pd.read_csv('NCdata.csv').drop(['Date', 'concern'], axis=1)
+train_df = pd.read_csv('datasets/trainingData.csv').drop(['Date', 'concern'], axis=1)
 # setting the x value to everything but the AQI column since that's what we're trying to predict
 X = train_df.drop('AQI', axis=1).copy()
 # setting the y value to the AQI column
@@ -53,7 +53,7 @@ with open('xgboost.pkl', 'rb') as model_file:
 """ Running it with the blind dataset to test performance """
 
 # Literally repeating the same process as the previous code, just this time with a different dataset and no training
-blind_test_df = pd.read_csv('blind.csv').drop(['Date', 'concern'], axis=1)
+blind_test_df = pd.read_csv('datasets/blindData.csv').drop(['Date', 'concern'], axis=1)
 X_blind = blind_test_df.drop('AQI', axis=1)
 y_blind_actual = blind_test_df['AQI']
 

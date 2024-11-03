@@ -22,6 +22,7 @@ db = pymysql.connect(
 # Initiating the database cursor for executing SQL commands
 cursor = db.cursor()
 
+
 # Sends email using mailslurp
 def send_email(recipient, subject, message):
     configuration = mailslurp_client.Configuration()
@@ -33,12 +34,12 @@ def send_email(recipient, subject, message):
         inbox_id = inbox.id
         inbox_controller.send_email(inbox_id, recipient, subject, message)
 
-# API endpoint to add email to database
-@app.route("/add_email", methods=['POST'])
-def add_email():
-    data = request.json
-    email = data.get('email')
 
+# API endpoint to add email to database
+@app.route("/add_email/<email>", methods=['POST'])
+def add_email(email):
+
+    db.ping()
     cursor.execute("INSERT INTO userData (email) VALUES (%s)", (email,))
     db.commit()
 
@@ -47,6 +48,7 @@ def add_email():
     send_email(email, subject, message)
 
     return {"status": "Email added", "recipient_email": email}
+
 
 #  API endpoint for checking the threshold
 @app.route("/check_threshold", methods=['POST'])
@@ -85,6 +87,7 @@ def send_weekly_threshold_alert():
     for email in emails:
         send_email(email, subject, message)
 
+
 # Creates the schedule for every monday at 7:00 am
 def schedule_weekly_alerts():
     schedule.every().monday.at("07:00").do(send_weekly_threshold_alert)
@@ -92,12 +95,18 @@ def schedule_weekly_alerts():
         schedule.run_pending()
         time.sleep(60)
 
+
 # Starting the scheduling thread for weekly alerts
 threading.Thread(target=schedule_weekly_alerts, daemon=True).start()
 
+
 @app.route("/", methods=['POST', 'GET'])
 def main_page():
+
+
+
     return render_template('homepage.html')
+
 
 # Running the Flask application
 if __name__ == '__main__':

@@ -15,7 +15,7 @@ import pickle
 """ Loading and preparing the training dataset """
 
 # removing the Date and the AQI columns because we don't want those interfering with the model's learning
-df = pd.read_csv('NCdata.csv').drop(['AQI', 'Date'], axis=1)
+df = pd.read_csv('datasets/trainingData.csv').drop(['AQI', 'Date'], axis=1)
 # setting the x value to everything but the concern column since that's what we're trying to predict
 x = df.drop('concern', axis=1).copy()
 # setting the y value to the concern level column
@@ -51,7 +51,7 @@ pickle.dump(reg, open(filename, 'wb'))
 """ Running it with the blind dataset to test performance """
 
 # Literally repeating the same process as the previous code, just this time with a different dataset and no training
-pred_df = pd.read_csv('blind.csv').drop(['AQI', 'Date'], axis=1)
+pred_df = pd.read_csv('datasets/blindData.csv').drop(['AQI', 'Date'], axis=1)
 x_pred = pred_df.drop('concern', axis=1).copy()
 y_true = pred_df['concern'].copy()
 
