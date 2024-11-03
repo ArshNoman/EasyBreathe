@@ -127,10 +127,10 @@ def main_page():
 
         predictions = mLearning.make_prediction(date, city)
 
-
         return {'prediction': predictions}
 
     return
+
 
 # Running the Flask application
 if __name__ == '__main__':
