@@ -43,8 +43,11 @@ def send_email(recipient, subject, message):
 # API endpoint to add email to database
 @app.route("/add_email/<email>", methods=['POST'])
 def add_email(email):
+    email = request.args.get('email')
+    city = request.args.get('location')
+
     db.ping()
-    cursor.execute("INSERT INTO userData (email) VALUES (%s)", (email,))
+    cursor.execute("INSERT INTO users VALUES (%s, %s)", (email, city))
     db.commit()
 
     subject = "Subscription Confirmation"

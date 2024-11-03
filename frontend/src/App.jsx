@@ -46,6 +46,7 @@ const App = () => {
           <div className='headers'>
             <h1>EASY BREATHE</h1>
             <h3>Air Quality Predictions</h3>
+            <p>Only dates from 11/3/2024-9/14/2025 are valid</p>
           </div>
           <div className='form'>
             <div className='form-group'>
