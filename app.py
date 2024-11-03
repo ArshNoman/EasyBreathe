@@ -6,11 +6,15 @@ import schedule
 import time
 import threading
 import mLearning
-import jsonify
+
+from flask_cors import CORS, cross_origin
 
 # Creating the Flask app for development and deployment
-app = Flask(__name__, static_folder="static", template_folder="static")
+app = Flask(__name__)
 app.config['SECRET_KEY'] = 'theory can only take you so far'
+
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Creating the first connection to our MySQL database
 db = pymysql.connect(
@@ -23,7 +27,6 @@ db = pymysql.connect(
 
 # Initiating the database cursor for executing SQL commands
 cursor = db.cursor()
-
 
 # Sends email using mailslurp
 def send_email(recipient, subject, message):
@@ -49,7 +52,6 @@ def add_email(email):
     send_email(email, subject, message)
 
     return {"status": "Email added", "recipient_email": email}
-
 
 #  API endpoint for checking the threshold
 @app.route("/check_threshold", methods=['POST'])
@@ -117,17 +119,18 @@ def main_page():
         send_email(email, subject, message)
 
     elif request.method == 'GET':
-        # city = request.form['city']
-        # date = request.form['date']
-        #
-        # date = datetime.datetime.strptime(date, "%Y-%m-%d")
-        #
-        prediction = mLearning.make_prediction('2025-01-02', 'Chapel Hill')
+        #city = request.args.get("city")
+        #date = request.args.get("date")
 
-        return prediction
+        city = 'Chapel Hill'
+        date = '2025-09-07 12:00:00'
+
+        predictions = mLearning.make_prediction(date, city)
+
+
+        return {'prediction': predictions}
 
     return
-
 
 # Running the Flask application
 if __name__ == '__main__':
