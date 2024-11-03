@@ -3,7 +3,6 @@ import "../styles/default.css";
 import "../styles/sidebar.css";
 
 function PhoneForm(){
-
     const [email, setEmail] = useState("");
     const [location, setLocation] = useState("");
 
