@@ -119,18 +119,15 @@ def main_page():
         send_email(email, subject, message)
 
     elif request.method == 'GET':
-        #city = request.args.get("city")
-        #date = request.args.get("date")
 
-        city = 'Chapel Hill'
-        date = '2025-09-07 12:00:00'
+        city = request.args.get("city")
+        date = (request.args.get("date"))
 
         predictions = mLearning.make_prediction(date, city)
 
         return {'prediction': predictions}
 
     return
-
 
 # Running the Flask application
 if __name__ == '__main__':
