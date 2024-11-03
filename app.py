@@ -1,10 +1,11 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, flash
 import pymysql
 import mailslurp_client
 import datetime
 import schedule
 import time
 import threading
+import mLearning
 
 # Creating the Flask app for development and deployment
 app = Flask(__name__)
@@ -38,7 +39,6 @@ def send_email(recipient, subject, message):
 # API endpoint to add email to database
 @app.route("/add_email/<email>", methods=['POST'])
 def add_email(email):
-
     db.ping()
     cursor.execute("INSERT INTO userData (email) VALUES (%s)", (email,))
     db.commit()
@@ -103,7 +103,26 @@ threading.Thread(target=schedule_weekly_alerts, daemon=True).start()
 @app.route("/", methods=['POST', 'GET'])
 def main_page():
 
+    if request.method == 'POST':
+        email = request.form['email']
 
+        db.ping()
+        cursor.execute("INSERT INTO userData (email) VALUES (%s)", (email))
+        db.commit()
+
+        subject = "Subscription Confirmation"
+        message = f"You have signed up to receive air quality notifications at {email}."
+        send_email(email, subject, message)
+
+    elif request.method == 'GET':
+        city = request.form['city']
+        date = request.form['date']
+
+        date = datetime.datetime.strptime(date, "%Y-%m-%d")
+
+        prediction = mLearning.make_prediction(date, city)
+
+        return render_template('homepage.html', prediction_list=prediction)
 
     return render_template('homepage.html')
 
