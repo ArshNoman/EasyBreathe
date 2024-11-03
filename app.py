@@ -5,7 +5,6 @@ import datetime
 import pymysql
 import mailslurp_client
 
-
 # Creating the Flask app for development and deployment
 app = Flask(__name__)
 # Great movie!
@@ -26,8 +25,6 @@ cursor = db.cursor()
 db.ping()
 if cursor.connection is None:
     db.ping()
-
-
 
 @app.route("/check_threshold", methods=['POST'])
 def check_threshold():
@@ -65,16 +62,10 @@ def check_threshold():
 
     return {"inbox_id": inbox_id, "inbox_email_address": inbox_email_address}
 
-    
 # Main page function
 @app.route("/", methods=['POST', 'GET'])
 def main_page():
-
     return render_template('homepage.html')
-
-
-
-
 
 # Email sending function
 @app.route("/send_email", methods=['POST'])
@@ -97,9 +88,5 @@ def send_email():
     
     return {"inbox_id": inbox_id, "inbox_email_address": inbox_email_address}
 
-
 if __name__ == '__main__':
-    Flask.run(app)
-
-
-
+    app.run(debug=True)
