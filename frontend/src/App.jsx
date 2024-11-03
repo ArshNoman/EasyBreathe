@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import "./App.css"
@@ -9,20 +9,19 @@ import MapComponent from './components/MapComponent';
 
 const App = () => {
 
-  const [date, setDate] = useState("0-0-0");
+  const [date, setDate] = useState("0000-00-00");
   const [time, setTime] = useState("");
-  const [predictions, setPredictions] = useState(getPredictions)
 
-  async function update(isDate, value){
+  useEffect(() => {
+    console.log(`Updated Date: ${date}, Updated Time: ${time}`);
+  }, [date, time])
+
+  function update(isDate, value){
     if(isDate == 1){
       setDate(value);
-    }else if (isDate == 2){
+    }else if (isDate == 0){
       setTime(value);
     }
-
-    // send in get request here
-    setPredictions(getPredictions);
-    console.log(data);
   }
 
   function parseDateAndTime(d){
@@ -40,17 +39,6 @@ const App = () => {
     update(3, "");
   }
 
-  async function getPredictions(){
-    let cities = ['Apex','Asheville','Burlington','Cary', 'Concord', 'Chapel Hill', 'Charlotte', 'Durham', 'Fayetteville', 'Greensboro', 'Gastonia', 'Greenville', 'High Point', 'Huntersville', 'Jacksonville', 'Kannapolis', 'Raleigh', 'Wake Forest', 'Wilmington', 'Winston-Salem'];
-    let data = [];
-
-    for (let i = 0; i < cities.length; i++) {
-        let response = await fetch(`http://127.0.0.1:5000?city=${cities[i]}&time=${date}`); // Use backticks and fix the URL parameters
-        data[i] = { city: cities[i], prediction: await response.json() }; // Use object syntax correctly
-    }
-
-    return data;
-  }
 
   return (
     <div className='container'>
@@ -62,11 +50,11 @@ const App = () => {
           <div className='form'>
             <div className='form-group'>
               <label>Date: </label>
-              <input type="date" id="selected_date" value = {date} name="date" onChange={(e) => update(1, (e.target.value))}/>
+              <input type="date" id="selected_date" value = {date} name="date" onChange={(e) => setDate(e.target.value)}/>
             </div>
             <div className='form-group'>
               <label>Time: </label>
-              <input type="time" id="selected_time" value = {time} name="date" onChange={(e) => update(0, (e.target.value))}/>
+              <input type="time" id="selected_time" value = {time} name="time" onChange={(e) => update(0, e.target.value)}/>
             </div>
             <div className='form-group'>
               <button onClick={() => {parseDateAndTime(new Date)}}>Now</button>
@@ -76,8 +64,8 @@ const App = () => {
         </div>
         <div className='map-container'>
           <MapComponent
-            predictions = {predictions}
             date = {date}
+            time = {time}
           />
         </div>
       </div>
