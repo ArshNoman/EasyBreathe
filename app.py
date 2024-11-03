@@ -6,9 +6,10 @@ import schedule
 import time
 import threading
 import mLearning
+import jsonify
 
 # Creating the Flask app for development and deployment
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static", template_folder="static")
 app.config['SECRET_KEY'] = 'theory can only take you so far'
 
 # Creating the first connection to our MySQL database
@@ -116,16 +117,16 @@ def main_page():
         send_email(email, subject, message)
 
     elif request.method == 'GET':
-        city = request.form['city']
-        date = request.form['date']
+        # city = request.form['city']
+        # date = request.form['date']
+        #
+        # date = datetime.datetime.strptime(date, "%Y-%m-%d")
+        #
+        prediction = mLearning.make_prediction('2025-01-02', 'Chapel Hill')
 
-        date = datetime.datetime.strptime(date, "%Y-%m-%d")
+        return prediction
 
-        prediction = mLearning.make_prediction(date, city)
-
-        return render_template('homepage.html', prediction_list=prediction)
-
-    return render_template('homepage.html')
+    return
 
 
 # Running the Flask application
