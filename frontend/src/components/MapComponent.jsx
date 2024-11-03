@@ -1,8 +1,6 @@
-
-
 import 'leaflet/dist/leaflet.css';
 
-import { MapContainer, TileLayer, Popup, Marker } from 'react-leaflet'
+import { MapContainer, TileLayer, Popup, Marker, SVGOverlay } from 'react-leaflet'
 
 function MapComponent(){
 
@@ -16,12 +14,13 @@ function MapComponent(){
    maxZoom= {20}
    subdomains={['mt1','mt2','mt3']}
 />
-
-
-    {bigLocations.map((elem, index) =>  {return <Marker position={[elem.position.lat, elem.position.lng]}> <Popup> {elem.name} </Popup></Marker>})}
-    {smallLocations.map((elem, index) =>  {return <Marker position={[elem.lat, elem.lng]}> <Popup> {elem.name} </Popup></Marker>})}
+      {bigLocations.map((elem, index) => { return <SVGOverlay key = {index} attributes={{ stroke: 'red' }} bounds={[[elem.position.lat, elem.position.lng], [elem.position.lat + 0.05, elem.position.lng + 0.2]]}> <rect x="0" y="0" width="100%" height="100%" fill="blue" /> <text x="10%" y="65%" stroke="white"> {elem.name}</text></SVGOverlay>})}
+      {smallLocations.map((elem, index) => { return <SVGOverlay key = {index} attributes={{ stroke: 'red' }} bounds={[[elem.lat, elem.lng], [elem.lat + 0.05, elem.lng + 0.2]]}> <rect x="0" y="0" width="100%" height="100%" fill="blue" /> <text x="10%" y="65%" stroke="white"> {elem.name}</text></SVGOverlay>})}
     </MapContainer>
   );
 };
 
 export default MapComponent;
+
+/*{bigLocations.map((elem, index) =>  {return <Marker position={[elem.position.lat, elem.position.lng]}> <Popup> {elem.name} </Popup></Marker>})}
+    {smallLocations.map((elem, index) =>  {return <Marker position={[elem.lat, elem.lng]}> <Popup> {elem.name} </Popup></Marker>})}*/
