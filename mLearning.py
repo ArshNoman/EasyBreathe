@@ -5,15 +5,15 @@ import pickle
 
 
 def make_prediction(date, city):
-    date = date + ' 12:00:00'
+    #date = date + ' 12:00:00'
 
-    cities = {'Apex': 'datasets/cities/APdata.csv', 'Asheville': 'datasets/cities/AVdata.csv', 'Burlington': 'datasets/cities/BGdata.csv', 'Cary': 'datasets/cities/CAdata.csv',
-              'Concord': 'datasets/cities/CCdata.csv', 'Chapel Hill': 'datasets/cities/CHdata.csv', 'Charlotte': 'datasets/cities/CLdata.csv', 'Durham': 'datasets/cities/DHdata.csv',
-              'Fayetteville': 'datasets/cities/FYdata.csv', 'Greensboro': 'datasets/cities/GBdata.csv', 'Gastonia': 'datasets/cities/GTdata.csv', 'Greenville': 'datasets/cities/GVdata.csv',
-              'High Point': 'datasets/cities/HPdata.csv', 'Huntersville': 'datasets/cities/HVdata.csv', 'Jacksonville': 'datasets/cities/JVdata.csv', 'Kannapolis': 'datasets/cities/KPdata.csv',
-              'Raleigh': 'datasets/cities/RLdata.csv', 'Wake Forest': 'datasets/cities/WFdata.csv', 'Wilmington': 'datasets/cities/WLdata.csv', 'Winston-Salem': 'datasets/cities/WSdata.csv'}
+    city_names = {'Apex': './datasets/cities/APdata.csv', 'Asheville': './datasets/cities/AVdata.csv', 'Burlington': './datasets/cities/BGdata.csv', 'Cary': './datasets/cities/CAdata.csv',
+              'Concord': './datasets/cities/CCdata.csv', 'Chapel Hill': './datasets/cities/CHdata.csv', 'Charlotte': './datasets/cities/CLdata.csv', 'Durham': './datasets/cities/DHdata.csv',
+              'Fayetteville': './datasets/cities/FYdata.csv', 'Greensboro': './datasets/cities/GBdata.csv', 'Gastonia': './datasets/cities/GTdata.csv', 'Greenville': './datasets/cities/GVdata.csv',
+              'High Point': './datasets/cities/HPdata.csv', 'Huntersville': './datasets/cities/HVdata.csv', 'Jacksonville': './datasets/cities/JVdata.csv', 'Kannapolis': './datasets/cities/KPdata.csv',
+              'Raleigh': './datasets/cities/RLdata.csv', 'Wake Forest': './datasets/cities/WFdata.csv', 'Wilmington': './datasets/cities/WLdata.csv', 'Winston-Salem': './datasets/cities/WSdata.csv'}
 
-    filename = cities[city]
+    filename = city_names[city]
 
     df = pd.read_csv(filename)
 
@@ -31,5 +31,7 @@ def make_prediction(date, city):
 
     y_pred = reg_concern.predict(pred_df)
     y_pred_concern = np.clip(y_pred, 0, 5)
+
+    print(y_pred_aqi, y_pred_concern)
 
     return {'aqi': round(y_pred_aqi[0]), 'concern': round(y_pred_concern[0])}
