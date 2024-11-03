@@ -105,9 +105,10 @@ def main_page():
 
     if request.method == 'POST':
         email = request.form['email']
+        city = request.form['location']
 
         db.ping()
-        cursor.execute("INSERT INTO userData (email) VALUES (%s)", (email))
+        cursor.execute("INSERT INTO user VALUES (%s, %s)", (email, city))
         db.commit()
 
         subject = "Subscription Confirmation"
