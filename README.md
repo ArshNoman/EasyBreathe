@@ -1,4 +1,4 @@
-# EasyBreathe
+ # EasyBreathe
 
 Clone the repository to a directory in your system. Run "main.py" using a virtual environment (preferably the virtualenv Python library) with all the packages found in "requirements.txt"
 
